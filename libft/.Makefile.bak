@@ -1,0 +1,83 @@
+# Project name
+NAME        := libft.a
+
+# Compiler and flags
+CC          := gcc
+CFLAGS      := -Wall -Wextra -Werror
+
+# Directory paths
+INC_DIR     := includes
+SRC_DIR     := srcs
+OBJ_DIR     := objs
+
+# Source files and their paths
+SRC_FILES   = \
+    ft_atoi ft_isascii ft_memcmp ft_putendl_fd ft_strcmp \
+    ft_strlcpy ft_strrchr ft_bzero ft_isdigit ft_memcpy \
+    ft_putnbr_fd ft_strdup ft_strlen ft_strtrim ft_calloc \
+    ft_isprint ft_memmove ft_putstr_fd ft_striteri \
+    ft_strmapi ft_substr ft_isalnum ft_itoa ft_memset \
+    ft_split ft_strjoin ft_strncmp ft_tolower ft_isalpha \
+    ft_memchr ft_putchar_fd ft_strchr ft_strlcat \
+    ft_strnstr ft_toupper
+
+LIST_FILES	:= \
+	ft_lstadd_back ft_lstadd_front ft_lstclear ft_lstdelone \
+	ft_lstiter ft_lstlast ft_lstmap ft_lstnew ft_lstsize \
+
+DBL_LIST_FILES	:= \
+	ft_dlstadd_back ft_dlstadd_front ft_dlstclear ft_dlstdelone \
+	ft_dlstiter ft_dlstlast ft_dlstmap ft_dlstnew ft_dlstsize \
+	ft_dlst_rotate
+SRC_FILES	+= $(LIST_FILES)
+SRC_FILES	+= $(DBL_LIST_FILES)
+
+SRC_PREFIX  := $(SRC_DIR)/
+SRC_SUFFIX  := .c
+SRCS        := $(addprefix $(SRC_PREFIX), $(addsuffix $(SRC_SUFFIX), $(SRC_FILES)))
+
+# Object files and their paths
+OBJS        := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+
+# Include paths
+INC         := -I$(INC_DIR)
+
+# Directories to create if they don't exist
+DIRS        := $(INC_DIR) $(SRC_DIR) $(OBJ_DIR)
+
+# Default target
+all: $(DIRS) $(NAME)
+
+# Build the library
+$(NAME): $(OBJS)
+	echo "Linking $(NAME)..."
+	ar -rc $@ $^
+	ranlib $@
+	echo "$(NAME) created successfully!"
+
+# Compile source files to object files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(DIRS)
+	$(CC) $(CFLAGS) $(INC) -c $< -o $@
+
+# Create necessary directories
+$(DIRS):
+	mkdir -p $@
+	echo "Created directory: $@"
+
+# Clean object files and directories
+clean:
+	echo "Cleaning object files..."
+	rm -rf $(OBJ_DIR)
+	echo "Object files cleaned."
+
+# Clean executable and library files
+fclean: clean
+	echo "Cleaning library..."
+	rm -f $(NAME)
+	echo "Library cleaned."
+
+# Rebuild everything from scratch
+re: fclean all
+
+.SILENT:
+.PHONY: all clean fclean re bonus
