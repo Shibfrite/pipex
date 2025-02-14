@@ -1,57 +1,78 @@
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <errno.h>
-#include <string.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include "libft.h"
+/* ************************************************************************** */
+/*																			*/
+/*														 ::::::::		   */
+/*   main.c                                              :+:    :+:           */
+/*													  +:+				   */
+/*   By: makurek <marvin@42.fr>						+#+					*/
+/*													+#+					 */
+/*   Created: 2025/02/14 17:30:41 by makurek		#+#	#+#				*/
+/*   Updated: 2025/02/14 19:40:14 by makurek        ########   odam.nl        */
+/*																			*/
+/* ************************************************************************** */
 
-void execute_command(char *cmd, char **args, char **env)
+#include "pipex.h"
+
+int	fork_first_child(t_process_info *info, int pipefd[2],
+		const char *input_file, char **argv)
 {
-	const char	*paths[3];
-	char		*full_path;
-	int			i;
+	pid_t	pid;
 
-	paths[0] = "/bin";
-	paths[1] = "/usr/bin";
-	paths[2] = NULL;
-	i = 0;
-	printf("JESUISRACISTE\n");
-	while (paths[i])
+	info->fd_in = open(input_file, O_RDONLY);
+	if (info->fd_in == -1)
+		error_exit("open");
+	pid = fork();
+	if (pid == -1)
 	{
-		full_path = ft_strdup(paths[i]); 
-		if (!full_path)
-		{
-			perror("malloc");
-			exit(EXIT_FAILURE);
-		}
-		full_path = strcat(full_path, "/");
-		full_path = strcat(full_path, cmd);
-		if (!access(full_path, X_OK))
-		{
-			if (execve(full_path, args, env) == -1)
-			{
-				perror("execve");
-				free(full_path);
-				exit(EXIT_FAILURE);
-			}
-			free(full_path);
-			return ;
-		}
-		free(full_path);
-		i++;
+		close(info->fd_in);
+		error_exit("fork");
 	}
-	exit(EXIT_FAILURE);
+	if (!pid)
+	{
+		info->fd_out = pipefd[1];
+		info->output_file = NULL;
+		info->cmd_args = &argv[2];
+		execute_process(*info);
+	}
+	close(pipefd[1]);
+	close(info->fd_in);
+	return (EXIT_SUCCESS);
 }
 
-int main(int argc, char **argv, char **env)
+int	fork_last_child(t_process_info *info, int pipefd[2], char **argv, int argc)
 {
-	int		pipefd[2];
-	pid_t	pid1;
-	pid_t	pid2;
-	char	**cmd;
+	pid_t	pid;
+
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("fork");
+		return (EXIT_FAILURE);
+	}
+	if (!pid)
+	{
+		info->fd_in = pipefd[0];
+		info->fd_out = -1;
+		info->output_file = argv[argc - 1];
+		info->cmd_args = &argv[argc - 2];
+		execute_process(*info);
+	}
+	close(pipefd[0]);
+	return (EXIT_SUCCESS);
+}
+
+void	init_process_info(t_process_info *info, char **env)
+{
+	info->fd_in = -1;
+	info->fd_out = -1;
+	info->output_file = NULL;
+	info->cmd_args = NULL;
+	info->env = env;
+}
+
+int	main(int argc, char **argv, char **env)
+{
+	t_process_info	process_info;
+	int				pipefd[2];
 
 	if (argc != 5)
 	{
@@ -64,49 +85,12 @@ int main(int argc, char **argv, char **env)
 		perror("pipe");
 		return (EXIT_FAILURE);
 	}
-	pid1 = fork();
-	if (pid1 == -1)
-	{
-		perror("fork");
-		close(pipefd[0]);
-		close(pipefd[1]);
-		return (EXIT_FAILURE);
-	}
-	if (!pid1)
-	{
-		write(1, "I am the first child process\n", 29);
-		argv[2] = strcat(argv[2], " ");
-		argv[2] = strcat(argv[2], argv[1]);
-		cmd = ft_split(argv[2], ' ');
-		execute_command(cmd[0], cmd, env);
-		close(pipefd[0]);
-		exit(EXIT_FAILURE);
-	}
-	else
-	{
-		pid2 = fork();
-		if (pid2 == -1)
-		{
-			perror("fork");
-			close(pipefd[0]);
-			close(pipefd[1]);
-			return (EXIT_FAILURE);
-		}
-		if (!pid2)
-		{
-			write(1, "I am the second process\n", 25);
-			close(pipefd[1]);
-			waitpid(pid1, NULL, 0);
-			cmd = ft_split(argv[3], ' ');
-			execute_command(cmd[0], cmd , env);
-		}
-		else
-		{
-			close(pipefd[0]);
-			waitpid(pid1, NULL, 0);
-			waitpid(pid2, NULL, 0);
-			write(1, "I am a not a child process\n", 27);
-		}
-	}
+	init_process_info(&process_info, env);
+	if (fork_first_child(&process_info, pipefd, argv[1], argv))
+		fork_last_child(&process_info, pipefd, argv, argc);
+	close(pipefd[0]);
+	close(pipefd[1]);
+	wait(NULL);
+	wait(NULL);
 	return (0);
 }
