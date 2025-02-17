@@ -8,10 +8,11 @@ OBJ_DIR		 := objs
 BONUS_OBJ_DIR   := objs_bonus
 LIBFT_DIR	   := libft
 SRC_FILES	   := main.c support.c
+BONUS_FILES	   := main.c support.c heredoc.c pipes.c fork.c
 SRC_PREFIX	  := $(SRC_DIR)/
 BONUS_PREFIX	:= $(BONUS_DIR)/
 SRCS			:= $(addprefix $(SRC_PREFIX),$(SRC_FILES))
-BONUS_SRCS	  := $(addprefix $(BONUS_PREFIX),$(SRC_FILES))
+BONUS_SRCS	  := $(addprefix $(BONUS_PREFIX),$(BONUS_FILES))
 OBJS			:= $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 BONUS_OBJS	  := $(BONUS_SRCS:$(BONUS_DIR)/%.c=$(BONUS_OBJ_DIR)/%.o)
 INC			 := -I$(INC_DIR) -I$(LIBFT_DIR)/$(INC_DIR)
@@ -21,8 +22,8 @@ DIRS			:= $(INC_DIR) $(SRC_DIR) $(OBJ_DIR) $(BONUS_OBJ_DIR) $(LIBFT_DIR)
 all:			$(NAME)
 
 bonus:		  $(BONUS_OBJS) $(LIBFT)
-		$(CC) $(CFLAGS) $(BONUS_OBJS) $(LIBFT) -o $(NAME)_bonus
-		echo "$(NAME)_bonus created successfully!"
+		$(CC) $(CFLAGS) $(BONUS_OBJS) $(LIBFT) -o $(NAME)
+		echo "$(NAME) with bonus created successfully!"
 
 $(NAME):		$(OBJS) $(LIBFT)
 		$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $@
