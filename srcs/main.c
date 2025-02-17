@@ -12,52 +12,62 @@
 
 #include "pipex.h"
 
-int	fork_first_child(t_process_info *info, int pipefd[2],
-		const char *input_file, char **argv)
-{
-	pid_t	pid;
 
-	info->fd_in = open(input_file, O_RDONLY);
-	if (info->fd_in == -1)
-		error_exit("open");
-	pid = fork();
-	if (pid == -1)
-	{
-		close(info->fd_in);
-		error_exit("fork");
-	}
-	if (!pid)
-	{
-		info->fd_out = pipefd[1];
-		info->output_file = NULL;
-		info->cmd_args = &argv[2];
-		execute_process(*info);
-	}
-	close(pipefd[1]);
-	close(info->fd_in);
-	return (EXIT_SUCCESS);
+int fork_first_child(t_process_info *info, int pipefd[2], const char *input_file, char **argv)
+{
+    info->fd_in = open(input_file, O_RDONLY);
+    if (info->fd_in == -1)
+        error_exit("open");
+    
+    pid_t pid = fork();
+    if (pid == -1)
+    {
+        close(info->fd_in);
+        error_exit("fork");
+    }
+    if (pid == 0)
+    {
+        dup2(info->fd_in, STDIN_FILENO);
+        dup2(pipefd[1], STDOUT_FILENO);
+        close(pipefd[0]);
+        close(pipefd[1]);
+        close(info->fd_in);
+        
+        info->cmd_args = &argv[2];
+        execute_process(*info);
+        exit(EXIT_FAILURE);
+    }
+    close(pipefd[1]);
+    close(info->fd_in);
+    return (pid);
 }
 
-int	fork_last_child(t_process_info *info, int pipefd[2], char **argv, int argc)
+int fork_last_child(t_process_info *info, int pipefd[2], char **argv, int argc)
 {
-	pid_t	pid;
-
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("fork");
-		return (EXIT_FAILURE);
-	}
-	if (!pid)
-	{
-		info->fd_in = pipefd[0];
-		info->fd_out = -1;
-		info->output_file = argv[argc - 1];
-		info->cmd_args = &argv[argc - 2];
-		execute_process(*info);
-	}
-	close(pipefd[0]);
-	return (EXIT_SUCCESS);
+    info->fd_out = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (info->fd_out == -1)
+        error_exit("open");
+        
+    pid_t pid = fork();
+    if (pid == -1)
+    {
+        close(info->fd_out);
+        error_exit("fork");
+    }
+    if (pid == 0)
+    {
+        dup2(pipefd[0], STDIN_FILENO);
+        dup2(info->fd_out, STDOUT_FILENO);
+        close(pipefd[0]);
+        close(info->fd_out);
+        
+        info->cmd_args = &argv[argc - 2];
+        execute_process(*info);
+        exit(EXIT_FAILURE);
+    }
+    close(pipefd[0]);
+    close(info->fd_out);
+    return (pid);
 }
 
 void	init_process_info(t_process_info *info, char **env)
