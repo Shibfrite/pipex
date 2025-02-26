@@ -6,7 +6,7 @@
 /*   By: makurek <marvin@42.fr>                        +#+                    */
 /*                                                    +#+                     */
 /*   Created: 2025/02/17 16:57:47 by makurek        #+#    #+#                */
-/*   Updated: 2025/02/17 18:55:21 by makurek        ########   odam.nl        */
+/*   Updated: 2025/02/26 15:26:04 by makurek        ########   odam.nl        */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ int	fork_first_child(t_process_info *info,
 	int pipefd[2], const char *input_file, char **argv)
 {
 	pid_t	pid;
+	int		here_doc;
 
 	info->fd_in = open(input_file, O_RDONLY);
 	if (info->fd_in == -1)
@@ -33,6 +34,8 @@ int	fork_first_child(t_process_info *info,
 	{
 		info->fd_out = pipefd[1];
 		info->output_file = NULL;
+		if (!strcmp(info->cmd_args, "here_doc"))
+			here_doc++;
 		info->cmd_args = &argv[2];
 		execute_process(*info);
 	}

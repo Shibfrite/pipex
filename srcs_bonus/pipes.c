@@ -6,7 +6,7 @@
 /*   By: makurek <marvin@42.fr>                        +#+                    */
 /*                                                    +#+                     */
 /*   Created: 2025/02/17 16:51:54 by makurek        #+#    #+#                */
-/*   Updated: 2025/02/17 19:22:10 by makurek        ########   odam.nl        */
+/*   Updated: 2025/02/26 15:22:27 by makurek        ########   odam.nl        */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ void	execute_pipeline(char **env,
 {
 	t_process_info	process_info;
 
+	if (!ft_strcmp(argv[1], "here_doc")
+		process_info.cmd_args = "here_doc";
 	process_info.env = env;
 	if (fork_first_child(&process_info,
 			pipes[0], argv[1], argv) == EXIT_FAILURE)

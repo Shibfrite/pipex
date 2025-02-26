@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                         ::::::::           */
+/*   libft_list.h                                        :+:    :+:           */
+/*                                                      +:+                   */
+/*   By: makurek <marvin@42.fr>                        +#+                    */
+/*                                                    +#+                     */
+/*   Created: 2025/02/26 15:41:15 by makurek        #+#    #+#                */
+/*   Updated: 2025/02/26 15:41:35 by makurek        ########   odam.nl        */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef LIBFT_LIST_H
 # define LIBFT_LIST_H
 
@@ -38,6 +50,6 @@ void	ft_dlstdelone(t_dnode *dlst, void (*del)(void*));
 void	ft_dlstclear(t_dnode **dlst, void (*del)(void*));
 void	ft_dlstiter(t_dnode *dlst, void (*f)(void*));
 t_dnode	*ft_dlstmap(t_dnode *dlst, void *(*f)(void*), void (*del)(void *));
-t_dnode *ft_dlst_rotate(t_dnode **head, int k);
+t_dnode	*ft_dlst_rotate(t_dnode **head, int k);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: makurek <marvin@42.fr>                        +#+                    */
 /*                                                    +#+                     */
 /*   Created: 2025/02/14 19:40:59 by makurek        #+#    #+#                */
-/*   Updated: 2025/02/17 18:47:32 by makurek        ########   odam.nl        */
+/*   Updated: 2025/02/26 15:15:03 by makurek        ########   odam.nl        */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void	execute_command(char *cmd, char **args, char **env)
 			&& execve(full_path, args, env) == -1)
 		{
 			free(full_path);
+			ft_putendl_fd(cmd, 2);
 			error_exit("execve");
 		}
 		free(full_path);

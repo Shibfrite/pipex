@@ -14,23 +14,16 @@ CFLAGS      := -Wall -Wextra -Werror
 # ==========================
 INC_DIR     := includes
 SRC_DIR     := srcs
-DLIST_DIR   := srcs/dlist
 LIST_DIR    := srcs/list
 MEMORY_DIR  := srcs/memory
 PRINT_DIR   := srcs/print
 STR_DIR     := srcs/str
-HASH_DIR    := srcs/hash_table
 OBJ_DIR     := objs
-OBJ_SUBDIRS := $(OBJ_DIR)/dlist $(OBJ_DIR)/list $(OBJ_DIR)/memory $(OBJ_DIR)/print $(OBJ_DIR)/str $(OBJ_DIR)/hash_table
+OBJ_SUBDIRS := $(OBJ_DIR)/list $(OBJ_DIR)/memory $(OBJ_DIR)/print $(OBJ_DIR)/str 
 
 # ==========================
 # Source Files
 # ==========================
-DLIST_FILES := \
-    ft_dlstadd_back.c ft_dlstadd_front.c ft_dlstclear.c ft_dlstdelone.c \
-    ft_dlstiter.c ft_dlstlast.c ft_dlstmap.c ft_dlstnew.c ft_dlstsize.c \
-    ft_dlst_rotate.c
-
 LIST_FILES  := \
     ft_lstadd_back.c ft_lstadd_front.c ft_lstclear.c ft_lstdelone.c \
     ft_lstiter.c ft_lstlast.c ft_lstmap.c ft_lstnew.c ft_lstsize.c
@@ -50,17 +43,12 @@ STR_FILES   := \
 	ft_isdigit.c ft_strcmp.c ft_strlcpy.c ft_strrchr.c \
 	is_sign.c is_space.c skip.c
 
-HASH_FILES  := \
-    hash_table.c hash_functions.c collision_resolution.c utility.c
-
 # Add prefixes for each directory to the respective files
 SRCS        := $(addprefix $(SRC_DIR)/, $(SRC_FILES)) \
-               $(addprefix $(DLIST_DIR)/, $(DLIST_FILES)) \
                $(addprefix $(LIST_DIR)/, $(LIST_FILES)) \
                $(addprefix $(MEMORY_DIR)/, $(MEMORY_FILES)) \
                $(addprefix $(PRINT_DIR)/, $(PRINT_FILES)) \
                $(addprefix $(STR_DIR)/, $(STR_FILES))  \
-               $(addprefix $(HASH_DIR)/, $(HASH_FILES))
 
 # ==========================
 # Object Files
