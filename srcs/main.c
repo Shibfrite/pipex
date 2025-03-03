@@ -6,7 +6,7 @@
 /*   By: makurek <marvin@42.fr>						+#+					*/
 /*													+#+					 */
 /*   Created: 2025/02/14 17:30:41 by makurek		#+#	#+#				*/
-/*   Updated: 2025/02/17 17:26:59 by makurek        ########   odam.nl        */
+/*   Updated: 2025/03/03 14:33:26 by makurek        ########   odam.nl        */
 /*																			*/
 /* ************************************************************************** */
 
@@ -19,12 +19,12 @@ int	fork_first_child(t_process_info *info,
 
 	info->fd_in = open(input_file, O_RDONLY);
 	if (info->fd_in == -1)
-		error_exit("open");
+		error_exit("open", NULL);
 	pid = fork();
 	if (pid == -1)
 	{
 		close(info->fd_in);
-		error_exit("fork");
+		error_exit("fork", NULL);
 	}
 	if (!pid)
 	{
@@ -49,12 +49,12 @@ int	fork_last_child(t_process_info *info,
 
 	info->fd_out = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (info->fd_out == -1)
-		error_exit("open");
+		error_exit("open", NULL);
 	pid = fork();
 	if (pid == -1)
 	{
 		close(info->fd_out);
-		error_exit("fork");
+		error_exit("fork", NULL);
 	}
 	if (!pid)
 	{

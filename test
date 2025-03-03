@@ -1,0 +1,23 @@
+    while (command[*i])
+	{
+    	if (in_quote)
+    	{
+    	    if (command[*i] == in_quote)
+    	        break ;
+    	}
+    	else if (is_space(command[*i]))
+    	    break ;
+    	(*i)++;
+	}
+    while (command[i])
+	{
+		if (in_quote)
+		{
+			if (command[i] != in_quote)
+				in_quote = 0;
+		}
+		else if (is_space(command[i]))
+			break ;
+		i++;
+	}
+
