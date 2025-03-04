@@ -38,14 +38,16 @@ char	**split_paths(const char *path_env)
 	return (paths);
 }
 
-void	free_array(char **paths)
+void	free_array(char **array)
 {
 	int	i;
 
+	if (!array)
+		return ;
 	i = 0;
-	while (paths[i])
-		free(paths[i++]);
-	free(paths);
+	while (array[i])
+		free(array[i++]);
+	free(array);
 }
 
 int	find_and_execute_command(const char *cmd,
